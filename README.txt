@@ -14,6 +14,10 @@ Software and technologies used:
 //TODO
 
 Implementation details:
-1. MyBatis SQL mapping is annotations-based.
+1. MyBatis SQL mapping is annotation-based.
 2. Spring configuration is XML-based.
 // TODO
+
+Tutorials:
+1. MyBatis, MyBatis-Spring
+	 http://code.google.com/p/mybatis/downloads/list?can=3&q=Docs
