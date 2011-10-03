@@ -26,5 +26,10 @@ import com.igorbaiborodine.example.mybatis.customer.TestCustomerMapper;
 import com.igorbaiborodine.example.mybatis.customer.TestCustomerService;
 
 @RunWith(Suite.class)
-@SuiteClasses({ TestAddressMapper.class, TestAddressService.class})
+@SuiteClasses({ 
+		TestAddressMapper.class, 
+		TestAddressService.class,
+		TestCustomerMapper.class,
+		TestCustomerService.class
+})
 public class AllTests {}
