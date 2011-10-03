@@ -25,8 +25,11 @@
 	<dependencies>
 		<dependency org="org.mybatis" name="mybatis" rev="3.0.5"/>
 		<dependency org="org.mybatis" name="mybatis-spring" rev="1.0.1"/>
-		<dependency org="junit" name="junit" rev="4.9"/>
 		<dependency org="mysql" name="mysql-connector-java" rev="5.1.17"/>
 		<dependency org="com.intellij" name="annotations" rev="9.0.4"/>
+		<dependency org="commons-dbcp" name="commons-dbcp" rev="1.4"/>
+
+		<dependency org="junit" name="junit" rev="4.9"/>
+		<dependency org="org.springframework" name="spring-test" rev="3.0.6.RELEASE"/>
 	</dependencies>
 </ivy-module>
