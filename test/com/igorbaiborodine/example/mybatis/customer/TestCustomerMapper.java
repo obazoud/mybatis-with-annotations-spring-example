@@ -47,13 +47,13 @@ public class TestCustomerMapper {
 	
 	@Test 
 	public void testSelectByPrimaryKey() {
-		short customerId = 1;
+		Short customerId = new Short("1");
 		Customer customer = _customerMapper.selectByPrimaryKey(customerId);
 		
 		assertNotNull("test select by primary key failed - customer must not be null", customer);
 		_logger.debug(String.format("retrieved ", customer.toString()));
 		assertTrue("test select by primary key failed - customer id must not be different", 
-				customerId == customer.getCustomerId());
+				customerId.equals(customer.getCustomerId()));
 	}
 
 	@Test
@@ -61,18 +61,50 @@ public class TestCustomerMapper {
 		Customer customer = createCustomer();
 		
 		int count = _customerMapper.insert(customer);
-		assertEquals("test insert failed - count must be equal to 1", 1, count);
+		assertEquals("test insert failed - insert count must be equal to 1", 1, count);
 		assertNotNull("test insert failed - address id must not be null", customer.getCustomerId());
 		assertTrue("test insert failed - address id must be greater than 0", 
 				customer.getCustomerId() > 0);
 	}
-	
+
+	@Test
+	public void testDeleteByPrimaryKey() {
+
+		Customer customer = createCustomer();
+		int count = _customerMapper.insert(customer);
+		assertEquals("test delete by primary key - insert count must be equal to 1", 1, count);
+		
+		count = _customerMapper.deleteByPrimaryKey(customer.getCustomerId());
+		assertEquals("test delete by primary key - delete count must be equal to 1", 1, count);
+		
+		Customer deletedCustomer = _customerMapper.selectByPrimaryKey(customer.getCustomerId());
+		assertNull("test delete by primary key - deleted customer must be null", deletedCustomer);
+	}
+
+	@Test
+	public void testUpdateByPrimaryKey() {
+		
+		Short customerId = new Short("1");
+		Customer customer = _customerMapper.selectByPrimaryKey(customerId);
+		assertNotNull("test update by primary key failed - customer must not be null", customer);
+		
+		boolean isActive = ! customer.getActive();
+		customer.setActive(isActive);
+		
+		int count = _customerMapper.updateByPrimaryKey(customer);
+		assertEquals("test update by primary key failed - update count must be equal to 1", 1, count);
+		
+		customer = _customerMapper.selectByPrimaryKey(customerId);
+		assertEquals("test update by primary key failed - active field not updated", 
+				isActive, customer.getActive());
+	}
+
 	private Customer createCustomer() {
 		int random = (new Random()).nextInt(1000);
 		String firstName = "FIRST_NAME_ANT_" + random;
 		String lastName = "LAST_NAME_ANT_" + random;
-		byte storeId = 1;
-		short addressId = 1;
+		Byte storeId = new Byte("1");
+		Short addressId = new Short("1");
 		
 		Customer customer = new Customer();
 		
@@ -86,6 +118,8 @@ public class TestCustomerMapper {
 		
 		return customer;
 	}
+	
+	
 	
 	
 /*	
