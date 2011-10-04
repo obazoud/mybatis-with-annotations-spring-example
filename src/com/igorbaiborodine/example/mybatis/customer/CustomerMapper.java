@@ -20,6 +20,7 @@ import com.igorbaiborodine.example.mybatis.customer.Customer;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -27,6 +28,7 @@ import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
+import org.apache.ibatis.annotations.Update;
 
 public interface CustomerMapper {
 	
@@ -42,12 +44,21 @@ public interface CustomerMapper {
 	String SELECT_BY_PRIMARY_KEY = "select " + BASE_COLUMN_LIST 
 			+ " from customer where customer_id = #{customerId}";
 
+	String DELETE_BY_PRIMARY_KEY = "delete from customer where customer_id = #{customerId}";
+
+	String UPDATE_BY_PRIMARY_KEY = "update customer set"
+			+ " store_id = #{storeId}, first_name = #{firstName},"
+			+ " last_name = #{lastName}, email = #{email},"
+			+ " address_id = #{addressId}, active = #{active},"
+			+ " create_date = #{createDate}, last_update = #{lastUpdate}"
+			+ " where customer_id = #{customerId}";
+
 	@Insert(INSERT)
 	@Options(useGeneratedKeys = true, keyProperty = "customer_id")
 	@SelectKey(statement = "SELECT LAST_INSERT_ID();", 
 			before = false, 
 			keyProperty = "customerId", 
-			resultType = short.class)
+			resultType = Short.class)
 	int insert(Customer record_);
 	
 	@Select(SELECT_BY_PRIMARY_KEY)
@@ -62,13 +73,15 @@ public interface CustomerMapper {
 		@Result(column="create_date", property="createDate"),
 		@Result(column="last_update", property="lastUpdate")
 	})	
-    Customer selectByPrimaryKey(short customerId);
+    Customer selectByPrimaryKey(Short customerId);
 
-// TODO: to implement	
-/*    int updateByPrimaryKey(Customer record);
+	@Update(UPDATE_BY_PRIMARY_KEY)
+    int updateByPrimaryKey(Customer record); 
 
-    int deleteByPrimaryKey(Short customerId);
+    @Delete(DELETE_BY_PRIMARY_KEY)
+	int deleteByPrimaryKey(Short customerId);
     
+/*    
     List<Customer> getCustomerRewardsReport(Map<String, Object> params);
 */	
 }
