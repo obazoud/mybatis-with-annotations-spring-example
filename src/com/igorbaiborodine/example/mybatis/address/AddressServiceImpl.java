@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import com.igorbaiborodine.example.mybatis.exceptions.ServiceException;
 
 public class AddressServiceImpl implements AddressService {
+	@SuppressWarnings("unused")
 	private final Logger _logger = Logger.getLogger(getClass());
 	private AddressMapper _addressMapper;
 	
@@ -36,7 +37,7 @@ public class AddressServiceImpl implements AddressService {
 			assert(count > 0);
 			addressId = address_.getAddressId();
 		} catch (Throwable t) {
-			String msg = String.format("Cannot add address [%s]", address_.toString());
+			String msg = String.format("Cannot add %s", address_.toString());
 			throw new ServiceException(msg, t);
 		} 
 		return addressId;
