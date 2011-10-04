@@ -15,46 +15,76 @@
  ******************************************************************************/
 package com.igorbaiborodine.example.mybatis.customer;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.session.SqlSessionManager;
-import org.apache.ibatis.session.TransactionIsolationLevel;
-import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import com.igorbaiborodine.example.mybatis.address.Address;
 import com.igorbaiborodine.example.mybatis.address.AddressMapper;
 import com.igorbaiborodine.example.mybatis.exceptions.ServiceException;
 
 public class CustomerServiceImpl implements CustomerService {
-	private final Logger _logger = Logger.getLogger(CustomerServiceImpl.class);
+	// private final Logger _logger = Logger.getLogger(CustomerServiceImpl.class);
 	private CustomerMapper _customerMapper;
+	private AddressMapper _addressMapper;
 	
 	public void setCustomerMapper(CustomerMapper customerMapper_) {
 		_customerMapper = customerMapper_;
 	}
-	
-	@Override
-	public Customer getCustomer(short customerId_) throws ServiceException {
-		
-		Short customerId = 1;
-		Customer customer = _customerMapper.selectByPrimaryKey(customerId );
-		
-		return customer;
+	public void setAddressMapper(AddressMapper addressMapper_) {
+		_addressMapper = addressMapper_;
 	}
 
 	@Override
 	public short addCustomer(Customer customer_, Address address_) throws ServiceException {
+		
+		// TODO add Spring transactional support
 		short newCustomerId = -1;
+		try {
+			int count = _addressMapper.insert(address_); 
+			assert(count == 1);
+			assert(Short.valueOf(address_.getAddressId()) > 0);
+			
+			customer_.setAddressId(address_.getAddressId());
+			count = _customerMapper.insert(customer_);
+			assert(count == 1);
+			assert(Short.valueOf(customer_.getCustomerId()) > 0);
+			
+			newCustomerId = Short.valueOf(customer_.getCustomerId());
+		} catch (Throwable t) {
+			String msg = String.format("Cannot add %s with %s", customer_.toString(), address_.toString());
+			throw new ServiceException(msg, t);
+		} 
 		return newCustomerId;
 	}
 
 	@Override
-	public List<Customer> getCustomerRewardsReport(byte minMonthlyPurchases_,
+	public Customer findCustomer(short customerId_) throws ServiceException {
+		
+		Customer customer = null;
+		try {
+			customer = _customerMapper.selectByPrimaryKey(Short.valueOf(customerId_));
+		} catch (Throwable t) {
+			String msg = String.format("Cannot find customer with id [%d]", customerId_);
+			throw new ServiceException(msg, t);
+		}
+		return customer;
+	}
+
+	@Override
+	public boolean modifyCustomer(Customer customer_) throws ServiceException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean removeCustomer(short customerId_) throws ServiceException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<Customer> findCustomersToReward(byte minMonthlyPurchases_,
 			double minDollarAmountPurchased_) throws ServiceException {
+		// TODO to implement
 		List<Customer> rewardsReport = null;
 		return rewardsReport;
 	}
