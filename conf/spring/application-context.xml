@@ -27,6 +27,7 @@
 	
 	<bean id="customerService" class="com.igorbaiborodine.example.mybatis.customer.CustomerServiceImpl">
 		<property name="customerMapper" ref="customerMapper" />
+		<property name="addressMapper" ref="addressMapper" />
 	</bean>
 	
 	<bean id="addressMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
