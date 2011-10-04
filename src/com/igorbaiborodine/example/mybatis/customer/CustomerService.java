@@ -22,11 +22,15 @@ import com.igorbaiborodine.example.mybatis.exceptions.ServiceException;
 
 public interface CustomerService {
 
-	Customer getCustomer(short customerId_) throws ServiceException;
-	
 	short addCustomer(Customer customer_, Address address_) throws ServiceException;
 
-	List<Customer> getCustomerRewardsReport(
+	Customer findCustomer(short customerId_) throws ServiceException;
+	
+	boolean modifyCustomer(Customer customer_) throws ServiceException;
+	
+	boolean removeCustomer(short customerId) throws ServiceException;
+	
+	List<Customer> findCustomersToReward(
 			byte minMonthlyPurchases_, double minDollarAmountPurchased_) throws ServiceException;
 	
 }
