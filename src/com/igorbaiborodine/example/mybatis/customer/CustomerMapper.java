@@ -15,20 +15,18 @@
  ******************************************************************************/
 package com.igorbaiborodine.example.mybatis.customer;
 
-import com.igorbaiborodine.example.mybatis.address.Address;
-import com.igorbaiborodine.example.mybatis.customer.Customer;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectKey;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.mapping.StatementType;
 
 public interface CustomerMapper {
 	
@@ -52,6 +50,17 @@ public interface CustomerMapper {
 			+ " address_id = #{addressId}, active = #{active},"
 			+ " create_date = #{createDate}, last_update = #{lastUpdate}"
 			+ " where customer_id = #{customerId}";
+	/*
+	 *    {call rewards_report(
+      #{min_monthly_purchases,jdbcType=TINYINT,mode=IN},
+      #{min_dollar_amount_purchased,jdbcType=DECIMAL,mode=IN},
+      #{count_rewardees,jdbcType=INTEGER,mode=OUT})}
+	 * 
+	 */
+	String STOR_PROC_REWARDS_REPORT = "call rewards_report("
+			+ "#{min_monthly_purchases,jdbcType=TINYINT,mode=IN},"
+			+ "#{min_dollar_amount_purchased,jdbcType=DECIMAL,mode=IN},"
+			+ "#{count_rewardees,jdbcType=INTEGER,mode=OUT})";
 
 	@Insert(INSERT)
 	@Options(useGeneratedKeys = true, keyProperty = "customer_id")
@@ -81,7 +90,19 @@ public interface CustomerMapper {
     @Delete(DELETE_BY_PRIMARY_KEY)
 	int deleteByPrimaryKey(Short customerId);
     
-/*    
-    List<Customer> getCustomerRewardsReport(Map<String, Object> params);
-*/	
+	@Select(STOR_PROC_REWARDS_REPORT)
+	@Options(statementType = StatementType.CALLABLE)
+	@Results(value = {
+		@Result(column="customer_id", property="customerId"),
+		@Result(column="store_id", property="storeId"),
+		@Result(column="first_name", property="firstName"),
+		@Result(column="last_name", property="lastName"),
+		@Result(column="email", property="email"),
+		@Result(column="address_id", property="addressId"),
+		@Result(column="active", property="active"),
+		@Result(column="create_date", property="createDate"),
+		@Result(column="last_update", property="lastUpdate")
+	})	
+    List<Customer> getRewardsReport(Map<String, Object> params);
+	
 }
