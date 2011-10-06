@@ -15,14 +15,19 @@
  ******************************************************************************/
 package com.igorbaiborodine.example.mybatis.customer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import com.igorbaiborodine.example.mybatis.address.Address;
 import com.igorbaiborodine.example.mybatis.address.AddressMapper;
 import com.igorbaiborodine.example.mybatis.exceptions.ServiceException;
 
 public class CustomerServiceImpl implements CustomerService {
-	// private final Logger _logger = Logger.getLogger(CustomerServiceImpl.class);
+	private final Logger _logger = Logger.getLogger(getClass());
 	private CustomerMapper _customerMapper;
 	private AddressMapper _addressMapper;
 	
@@ -71,21 +76,35 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public boolean modifyCustomer(Customer customer_) throws ServiceException {
-		// TODO Auto-generated method stub
+		// TODO to implement
 		return false;
 	}
 	
 	@Override
 	public boolean removeCustomer(short customerId_) throws ServiceException {
-		// TODO Auto-generated method stub
+		// TODO to implement
 		return false;
 	}
 
 	@Override
 	public List<Customer> findCustomersToReward(byte minMonthlyPurchases_,
 			double minDollarAmountPurchased_) throws ServiceException {
-		// TODO to implement
-		List<Customer> rewardsReport = null;
-		return rewardsReport;
+		List<Customer> customersToReward = new ArrayList<Customer>();
+		Integer rewardeesCount;
+		
+		try {
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("min_monthly_purchases", new Byte(minMonthlyPurchases_));
+			params.put("min_dollar_amount_purchased", new Double(minDollarAmountPurchased_));
+			
+			customersToReward = _customerMapper.getRewardsReport(params);
+			rewardeesCount = (Integer) params.get("count_rewardees");
+			_logger.debug(String.format("rewardees count is [%d]", rewardeesCount));
+		} catch (Throwable t) {
+			String msg = String.format("Cannot retrieve customer to reward list with params [%d,%d]", 
+					minMonthlyPurchases_, minDollarAmountPurchased_);
+			throw new ServiceException(msg, t);
+		} 
+		return customersToReward;
 	}
 }
