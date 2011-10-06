@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import javax.annotation.Resource;
@@ -97,15 +98,26 @@ public class TestCustomerService {
 		return customer;
 	}
 	
+	@Test
+	public void testModifyCustomer() {
+		// TODO to implement
+		fail("method not implemented");
+	}
+	
+	@Test
+	public void testRemoveCustomer() {
+		// TODO to implement
+		fail("method not implemented");
+	}
+	
 	@Test 
-	public void testGetCustomerRewardsReport() throws ServiceException {
-//		byte minMonthlyPurchases = 7;
-//		double minDollarAmountPurchased = 20.0;
-//		
-//		List<Customer> rewardsReport = customerDao.getCustomerRewardsReport(
-//				minMonthlyPurchases, minDollarAmountPurchased);
-//		assertEquals("test get customer rewards report failed - record count must be equal to 2", 
-//				2, rewardsReport.size());
-		fail("not implemented");
+	public void testFindCustomersToReward() throws ServiceException {
+		byte minMonthlyPurchases = 7;
+		double minDollarAmountPurchased = 20.0;
+		
+		List<Customer> customersToReward = _customerService.findCustomersToReward(
+				minMonthlyPurchases, minDollarAmountPurchased);
+		assertEquals("test find customers to rewards failed - record count must be equal to 2", 
+				2, customersToReward.size());
 	}
 }
