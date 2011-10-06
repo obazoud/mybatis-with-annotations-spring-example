@@ -76,14 +76,28 @@ public class CustomerServiceImpl implements CustomerService {
 
 	@Override
 	public boolean modifyCustomer(Customer customer_) throws ServiceException {
-		// TODO to implement
-		return false;
+		
+		int count = 0;
+		try {
+			count = _customerMapper.updateByPrimaryKey(customer_);
+		} catch (Throwable t) {
+			String msg = String.format("Cannot modify %d", customer_);
+			throw new ServiceException(msg, t);
+		}
+		return (count == 1);
 	}
 	
 	@Override
 	public boolean removeCustomer(short customerId_) throws ServiceException {
-		// TODO to implement
-		return false;
+
+		int count = 0;
+		try {
+			count = _customerMapper.deleteByPrimaryKey(Short.valueOf(customerId_));
+		} catch (Throwable t) {
+			String msg = String.format("Cannot remove customer with id [%d]", customerId_);
+			throw new ServiceException(msg, t);
+		}
+		return (count == 1);
 	}
 
 	@Override
