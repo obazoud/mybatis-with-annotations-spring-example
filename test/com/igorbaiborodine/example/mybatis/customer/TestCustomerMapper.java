@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.igorbaiborodine.example.mybatis.customer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,10 +33,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.igorbaiborodine.example.mybatis.address.Address;
-import com.igorbaiborodine.example.mybatis.customer.Customer;
-import com.igorbaiborodine.example.mybatis.customer.CustomerMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/spring/application-context.xml") 
@@ -99,6 +95,24 @@ public class TestCustomerMapper {
 				isActive, customer.getActive());
 	}
 
+	// execute script alter_payment_date.sql 
+	// so rewards_report SP returns a result set with two customers
+	@Test
+	public void testGetRewardsReport() {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("min_monthly_purchases", new Byte("7"));
+		params.put("min_dollar_amount_purchased", new Double("20.0"));
+		
+		List<Customer> customers = _customerMapper.getRewardsReport(params);
+		assertNotNull("test get rewards report failed - customers list must not be null", 
+				customers);
+		assertNotNull("test get rewards report failed - count_rewardees out param must not be null", 
+				params.get("count_rewardees")); 
+		assertEquals("get customer rewards report failed - count_rewardees out param must be equal to 2",
+				2, ((Integer) params.get("count_rewardees")).intValue());
+	}
+
 	private Customer createCustomer() {
 		int random = (new Random()).nextInt(1000);
 		String firstName = "FIRST_NAME_ANT_" + random;
@@ -118,169 +132,4 @@ public class TestCustomerMapper {
 		
 		return customer;
 	}
-	
-	
-	
-	
-/*	
-	@Test
-	public void testSelectByExample() {
-		CustomerExample customerExample = new CustomerExample();
-		Criteria criteria = customerExample.createCriteria();
-		
-		String firstName = "JAMIE";
-		criteria.andFirstNameEqualTo(firstName);
-		List<Customer> customers = new ArrayList<Customer>();
-		
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			CustomerMapper mapper = session.getMapper(CustomerMapper.class);
-			customers = mapper.selectByExample(customerExample);
-		} finally {
-			session.close();
-		}
-		assertNotNull(customers);
-		assertEquals("test select by example failed - customer list size must be equal 2", 
-				2, customers.size());
-		for (Customer c : customers) {
-			assertEquals("test select by example failed - customer first name must not be different", 
-					firstName, c.getFirstName());
-		}
-	}
-	
-	@Test
-	public void testCountByExample() {
-		CustomerExample customerExample = new CustomerExample();
-		Criteria criteria = customerExample.createCriteria();
-		
-		String firstName = "TERRY";
-		criteria.andFirstNameEqualTo(firstName);
-		int count = -1;
-
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			CustomerMapper mapper = session.getMapper(CustomerMapper.class);
-			count = mapper.countByExample(customerExample);
-		} finally {
-			session.close();
-		}
-		assertEquals("test count by example failed - customer count must be equal 2", 2, count);
-	}
-
-	@Test
-	public void testUpdateByPrimaryKeySelective() {
-		Customer updatedCustomer = null;
-		boolean isActive = false;
-		short customerId = 1;
-		
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			// activate/deactivate customer
-			CustomerMapper mapper = session.getMapper(CustomerMapper.class);
-			Customer customer = mapper.selectByPrimaryKey(customerId);
-			assertNotNull("test update by primary key selective failed - customer must be null", 
-					customer);
-			isActive = !customer.getActive();
-			
-			Customer customerRecord = new Customer();
-			customerRecord.setCustomerId(customerId);
-			customerRecord.setActive(isActive);
-			
-			mapper.updateByPrimaryKeySelective(customerRecord);
-			session.commit(); // IMPORTANT
-			
-			updatedCustomer = mapper.selectByPrimaryKey(customerId); 
-		} finally {
-			session.close();
-		}
-		assertNotNull(updatedCustomer);
-		assertEquals("test update by primary key selective failed - active field must not be different", 
-				isActive, updatedCustomer.getActive());
-		assertEquals("update by primary key selective failed - last name field must not be different", 
-				"SMITH", updatedCustomer.getLastName());
-	}
-	
-
-	@Test
-	public void testDeleteByPrimaryKey() {
-		int random = (new Random()).nextInt(1000);
-		String firstName = "FIRST_NAME_" + random;
-		String lastName = "LAST_NAME_" + random;
-		byte storeId = 2;
-		short addressId = 2;
-
-		Customer customerRecord = createCustomer(firstName, lastName, addressId, storeId);
-		Customer insertedCustomer = null;
-		
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			CustomerMapper mapper = session.getMapper(CustomerMapper.class);
-			mapper.insert(customerRecord);
-			session.commit(); // VERY IMPORTANT
-			
-			insertedCustomer = mapper.selectByPrimaryKey(customerRecord.getCustomerId());	
-			assertNotNull("delete by example failed - null inserted customer", insertedCustomer);
-			
-			mapper.deleteByPrimaryKey(customerRecord.getCustomerId());
-			session.commit(); // VERY IMPORTANT
-
-			insertedCustomer = mapper.selectByPrimaryKey(customerRecord.getCustomerId());
-		} finally {
-			session.close();
-		}
-		assertNull("test delete by example failed - inserted customer must be null", insertedCustomer);
-	}
-	
-	private Customer createCustomer(String firstName_, String lastName_,
-			short addressId_, byte storeId_) {
-		Customer customer = new Customer();
-		
-		customer.setFirstName(firstName_);
-		customer.setLastName(lastName_);
-		customer.setEmail(firstName_ + "." + lastName_ + "@sakilacustomer.org");
-		customer.setAddressId(addressId_);
-		customer.setStoreId(storeId_);
-		customer.setActive(true);
-		customer.setCreateDate(new Date());
-		
-		return customer;
-	}
-	
-	// execute script alter_payment_date.sql 
-	// so rewards_report SP returns a result set with two customers
-	@Test
-	public void testGetCustomerRewardsReport() {
-		SqlSession session = sqlSessionFactory.openSession();
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("min_monthly_purchases", (byte)7);
-		params.put("min_dollar_amount_purchased", 20.0);
-		List<Customer> customers = null;
-		
-		try {
-			CustomerMapper mapper = session.getMapper(CustomerMapper.class);
-			customers = mapper.getCustomerRewardsReport(params);
-		} finally {
-			session.close();
-		}
-		assertNotNull("test get customer rewards report failed - customers list must not be null", 
-				customers);
-		assertNotNull("test get customer rewards report failed - count_rewardees out param must be null", 
-				params.get("count_rewardees")); 
-		assertEquals("get customer rewards report failed - count_rewardees out param must be equal to 2",
-				2, ((Integer) params.get("count_rewardees")).intValue());
-	}
-	
-	
-	@Test
-	public void testBlank() {
-		SqlSession session = sqlSessionFactory.openSession();
-		try {
-			CustomerMapper mapper = session.getMapper(CustomerMapper.class);
-		} finally {
-			session.close();
-		}
-		fail("method not implemented");
-	}
-*/
 }
