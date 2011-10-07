@@ -9,14 +9,13 @@ Software and technologies used:
 4. MySQL Connector/J 5.1.15
 5. SpringSource Tool Suite 2.7.2.RELEASE with the following plug-ins installed:
 	 Apache IvyDE
-	 MyBatis Generator
 6. MySQL Workbench 5.2.34 CE
-//TODO
+// TODO add implementation details
 
 Implementation details:
 1. MyBatis SQL mapping is annotation-based.
 2. Spring configuration is XML-based.
-// TODO
+// TODO add implementation details
 
 Tutorials:
 1. MyBatis, MyBatis-Spring
