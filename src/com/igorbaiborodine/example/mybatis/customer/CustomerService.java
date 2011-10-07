@@ -28,8 +28,6 @@ public interface CustomerService {
 	
 	boolean modifyCustomer(Customer customer_) throws ServiceException;
 	
-	boolean removeCustomer(short customerId) throws ServiceException;
-	
 	List<Customer> findCustomersToReward(
 			byte minMonthlyPurchases_, double minDollarAmountPurchased_) throws ServiceException;
 	

@@ -63,7 +63,7 @@ public interface CustomerMapper {
 			+ "#{count_rewardees,jdbcType=INTEGER,mode=OUT})";
 
 	@Insert(INSERT)
-	@Options(useGeneratedKeys = true, keyProperty = "customer_id")
+	@Options(useGeneratedKeys = true, keyProperty = "customer_id", flushCache = true)
 	@SelectKey(statement = "SELECT LAST_INSERT_ID();", 
 			before = false, 
 			keyProperty = "customerId", 
@@ -85,8 +85,10 @@ public interface CustomerMapper {
     Customer selectByPrimaryKey(Short customerId);
 
 	@Update(UPDATE_BY_PRIMARY_KEY)
+	@Options(flushCache = true)
     int updateByPrimaryKey(Customer record); 
 
+	@Options(flushCache = true)
     @Delete(DELETE_BY_PRIMARY_KEY)
 	int deleteByPrimaryKey(Short customerId);
     

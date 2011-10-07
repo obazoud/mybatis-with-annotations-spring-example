@@ -21,11 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.igorbaiborodine.example.mybatis.address.Address;
 import com.igorbaiborodine.example.mybatis.address.AddressMapper;
 import com.igorbaiborodine.example.mybatis.exceptions.ServiceException;
 
+@Transactional(rollbackForClassName={"ServiceException"})
 public class CustomerServiceImpl implements CustomerService {
 	private final Logger _logger = Logger.getLogger(getClass());
 	private CustomerMapper _customerMapper;
@@ -41,12 +44,13 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public short addCustomer(Customer customer_, Address address_) throws ServiceException {
 		
-		// TODO add Spring transactional support
 		short newCustomerId = -1;
 		try {
 			int count = _addressMapper.insert(address_); 
 			assert(count == 1);
 			assert(Short.valueOf(address_.getAddressId()) > 0);
+			
+			//double d = 1/0; // to test transaction roll-back 
 			
 			customer_.setAddressId(address_.getAddressId());
 			count = _customerMapper.insert(customer_);
@@ -62,6 +66,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Customer findCustomer(short customerId_) throws ServiceException {
 		
 		Customer customer = null;
@@ -87,19 +92,6 @@ public class CustomerServiceImpl implements CustomerService {
 		return (count == 1);
 	}
 	
-	@Override
-	public boolean removeCustomer(short customerId_) throws ServiceException {
-
-		int count = 0;
-		try {
-			count = _customerMapper.deleteByPrimaryKey(Short.valueOf(customerId_));
-		} catch (Throwable t) {
-			String msg = String.format("Cannot remove customer with id [%d]", customerId_);
-			throw new ServiceException(msg, t);
-		}
-		return (count == 1);
-	}
-
 	@Override
 	public List<Customer> findCustomersToReward(byte minMonthlyPurchases_,
 			double minDollarAmountPurchased_) throws ServiceException {
