@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Date;
 import java.util.List;
@@ -39,25 +38,8 @@ import com.igorbaiborodine.example.mybatis.exceptions.ServiceException;
 @ContextConfiguration(locations = "classpath:/spring/application-context.xml") 
 public class TestCustomerService {
 	@Resource
-	private CustomerServiceImpl _customerService;
+	private CustomerService _customerService;
 
-	@Test
-	public void testFindCustomer() throws ServiceException {
-		
-		// 1, 1, MARY, SMITH, MARY.SMITH@sakilacustomer.org, 5, 0, 2006-02-14 22:04:36, 2011-09-21 18:52:54
-		short customerId = 1;
-		Customer customer = _customerService.findCustomer(customerId);
-		assertNotNull("test find customer failed - customer must not be null", customer);
-		assertEquals("test find customer failed - first name must not be different from MARY", 
-				"MARY", customer.getFirstName());
-		assertEquals("test find customer failed - first name must not be different from SMITH", 
-				"SMITH", customer.getLastName());
-		
-		customerId = -1;
-		customer = _customerService.findCustomer(customerId);
-		assertNull("test find customer failed - customer must be null", customer);
-	}
-	
 	@Test
 	public void testAddCustomer() throws ServiceException {
 
@@ -68,6 +50,53 @@ public class TestCustomerService {
 		short newCustomerId = _customerService.addCustomer(customer, address);
 		assertTrue("test add customer failed - new customer id must be greater than 0",
 				newCustomerId > 0);
+	}
+
+	@Test
+	public void testFindCustomer() throws ServiceException {
+		
+		// 1, 1, MARY, SMITH, MARY.SMITH@sakilacustomer.org, 5, 0, 2006-02-14 22:04:36, 2011-09-21 18:52:54
+		Customer customer = _customerService.findCustomer(new Short("1"));
+		assertNotNull("test find customer failed - customer must not be null", customer);
+		assertEquals("test find customer failed - first name must not be different from MARY", 
+				"MARY", customer.getFirstName());
+		assertEquals("test find customer failed - first name must not be different from SMITH", 
+				"SMITH", customer.getLastName());
+		
+		customer = _customerService.findCustomer(new Short("-1"));
+		assertNull("test find customer failed - customer must be null", customer);
+	}
+	
+		
+	@Test
+	public void testModifyCustomer() throws ServiceException {
+		
+		short customerId = (short) 1;
+		Customer customer = _customerService.findCustomer(customerId);
+		assertNotNull("test modify customer failed - customer must not be null", customer);
+		
+		int random = (new Random()).nextInt(1000);
+		String email = random + "_test.service@sakilacustomer.org";
+		customer.setEmail(email);
+		
+		boolean isModified = _customerService.modifyCustomer(customer);
+		assertTrue("test modify customer failed - modified flag must be equal to true", isModified);
+		
+		customer = _customerService.findCustomer(customerId);
+		assertEquals("test modify customer failed - email was not modified", 
+				email, customer.getEmail());
+	}
+	
+	@Test 
+	public void testFindCustomersToReward() throws ServiceException {
+
+		byte minMonthlyPurchases = 7;
+		double minDollarAmountPurchased = 20.0;
+		
+		List<Customer> customersToReward = _customerService.findCustomersToReward(
+				minMonthlyPurchases, minDollarAmountPurchased);
+		assertEquals("test find customers to rewards failed - record count must be equal to 2", 
+				2, customersToReward.size());
 	}
 	
 	private Address createAddress(int random_) {
@@ -97,27 +126,5 @@ public class TestCustomerService {
 
 		return customer;
 	}
-	
-	@Test
-	public void testModifyCustomer() {
-		// TODO to implement
-		fail("method not implemented");
-	}
-	
-	@Test
-	public void testRemoveCustomer() {
-		// TODO to implement
-		fail("method not implemented");
-	}
-	
-	@Test 
-	public void testFindCustomersToReward() throws ServiceException {
-		byte minMonthlyPurchases = 7;
-		double minDollarAmountPurchased = 20.0;
-		
-		List<Customer> customersToReward = _customerService.findCustomersToReward(
-				minMonthlyPurchases, minDollarAmountPurchased);
-		assertEquals("test find customers to rewards failed - record count must be equal to 2", 
-				2, customersToReward.size());
-	}
+
 }

@@ -32,7 +32,7 @@ import com.igorbaiborodine.example.mybatis.exceptions.ServiceException;
 @ContextConfiguration(locations = "classpath:/spring/application-context.xml") 
 public class TestAddressService {
 	@Resource
-	private AddressServiceImpl _addressService;
+	private AddressService _addressService;
 
 	@Test
 	public void testAddAddress() throws ServiceException {
