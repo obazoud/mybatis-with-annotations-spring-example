@@ -18,11 +18,22 @@
 package com.igorbaiborodine.example.mybatis;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-class MyBatisWithXmlExample {
-	private final static Logger logger = Logger.getLogger(MyBatisWithXmlExample.class);
+import com.igorbaiborodine.example.mybatis.customer.Customer;
+import com.igorbaiborodine.example.mybatis.customer.CustomerService;
+import com.igorbaiborodine.example.mybatis.exceptions.ServiceException;
+
+class MyBatisWithAnnotaionsExample {
+	private final static Logger logger = Logger.getLogger(MyBatisWithAnnotaionsExample.class);
 	
-	public static void main(String[] args) {
-		// TODO: to implement
+	public static void main(String[] args) throws ServiceException {
+		
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("/spring/application-context.xml");
+		CustomerService customerService = (CustomerService) ctx.getBean("customerService");
+		
+		Customer customer = customerService.findCustomer((short)1);
+		logger.info("Found " + customer);
 	}
 }	
