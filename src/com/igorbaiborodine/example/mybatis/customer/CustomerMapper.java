@@ -50,13 +50,7 @@ public interface CustomerMapper {
 			+ " address_id = #{addressId}, active = #{active},"
 			+ " create_date = #{createDate}, last_update = #{lastUpdate}"
 			+ " where customer_id = #{customerId}";
-	/*
-	 *    {call rewards_report(
-      #{min_monthly_purchases,jdbcType=TINYINT,mode=IN},
-      #{min_dollar_amount_purchased,jdbcType=DECIMAL,mode=IN},
-      #{count_rewardees,jdbcType=INTEGER,mode=OUT})}
-	 * 
-	 */
+	
 	String STOR_PROC_REWARDS_REPORT = "call rewards_report("
 			+ "#{min_monthly_purchases,jdbcType=TINYINT,mode=IN},"
 			+ "#{min_dollar_amount_purchased,jdbcType=DECIMAL,mode=IN},"
